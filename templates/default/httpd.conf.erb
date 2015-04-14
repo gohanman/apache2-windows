@@ -66,8 +66,7 @@ Listen <%= address.length > 0 ? "#{address}:" : '' %><%= port %>
 LoadModule <%= mod %>_module modules/mod_<%= mod %>.so
 <% end -%>
 
-<IfModule !mpm_netware_module>
-<IfModule !mpm_winnt_module>
+<IfModule unixd_module>
 #
 # If you wish httpd to run as a different user or group, you must run
 # httpd as root initially and it will switch.  
@@ -79,7 +78,6 @@ LoadModule <%= mod %>_module modules/mod_<%= mod %>.so
 User <%= node['apache']['windows']['user'] %>
 Group <%= node['apache']['windows']['group'] %>
 
-</IfModule>
 </IfModule>
 
 # 'Main' server configuration
@@ -126,10 +124,8 @@ DocumentRoot "<%= node['apache']['windows']['docroot_dir'] %>"
 # features.  
 #
 <Directory />
-    Options FollowSymLinks
-    AllowOverride None
-    Order deny,allow
-    Deny from all
+    AllowOverride none
+    Require all denied
 </Directory>
 
 #
@@ -167,8 +163,7 @@ DocumentRoot "<%= node['apache']['windows']['docroot_dir'] %>"
     #
     # Controls who can get stuff from this server.
     #
-    Order allow,deny
-    Allow from all
+    Require all granted
 
 </Directory>
 
@@ -185,9 +180,7 @@ DocumentRoot "<%= node['apache']['windows']['docroot_dir'] %>"
 # viewed by Web clients. 
 #
 <FilesMatch "^\.ht">
-    Order allow,deny
-    Deny from all
-    Satisfy All
+    Require all denied
 </FilesMatch>
 
 #
@@ -281,8 +274,7 @@ LogLevel warn
 <Directory "<%= node['apache']['windows']['cgibin_dir'] %>/">
     AllowOverride None
     Options None
-    Order allow,deny
-    Allow from all
+    Require all granted
 </Directory>
 
 #
@@ -448,3 +440,6 @@ Include conf/extra/httpd-ssl.conf
 SSLRandomSeed startup builtin
 SSLRandomSeed connect builtin
 </IfModule>
+
+Include "<%= node['apache']['windows']['conf_dir'] %>/*.conf"
+
