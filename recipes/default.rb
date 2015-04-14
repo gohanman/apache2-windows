@@ -23,21 +23,33 @@ unless node['platform_family'] == 'windows'
   raise Chef::Exceptions::Application, "This cookbook only works on Microsoft Windows."
 end
 
-windows_package node['apache']['windows']['display_name'] do
-  source node['apache']['windows']['source']
-  installer_type :msi
-  # The latter four of these options are just to keep the Apache2 service
-  # from failing before rendering the actual httpd.conf.
-  options %W[
-    /quiet
-    INSTALLDIR="#{node['apache']['windows']['dir']}"
-    ALLUSERS=1
-    SERVERADMIN=#{node['apache']['windows']['serveradmin']}
-    SERVERDOMAIN=#{node['fqdn']}
-    SERVERNAME=#{node['fqdn']}
-  ].join(' ')
+require 'win32/service'
+
+# requires matching VC runtime
+include_recipe "vcruntime::#{node['apache']['windows']['version'].split('.')[3].downcase}"
+
+# init directory
+directory "#{node['apache']['windows']['topdir']}" do
+  action :create
 end
 
+# unzip apachelounge binaries to directory
+windows_zipfile "#{node['apache']['windows']['topdir']}" do
+  source node['apache']['windows']['source']
+  action :unzip
+  not_if {::Dir.exists?("#{node['apache']['windows']['topdir']}/Apache24")}
+end
+
+directory "#{node['apache']['windows']['conf_dir']}" do
+  action :create
+end
+
+# install service if necessary
+execute "#{node['apache']['windows']['bin_dir']}/httpd.exe -k install" do
+  not_if {::Win32::Service.exists?("apache2.4")}
+end
+
+# write config file
 template node['apache']['windows']['conf'] do
   source "httpd.conf.erb"
   action :create
@@ -48,8 +60,17 @@ node['apache']['windows']['extras'].each do |extra|
   include_recipe "apache2_windows::_extra_#{extra}"
 end
 
+windows_firewall_rule "Apache (Chef)" do
+  localport '80'
+  protocol :TCP
+  firewall_action :allow
+  profile :private
+  dir :in
+  program "#{node['apache']['windows']['bin_dir']}/httpd.exe".gsub('/', '\\')
+end
+
 # Start apache service
 service "apache2" do
-  service_name "Apache#{node['apache']['windows']['version'].split('.')[0..1].join('.')}"
+  service_name node['apache']['windows']['servicename']
   action [ :enable, :start ]
 end
