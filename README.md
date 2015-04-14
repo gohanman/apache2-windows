@@ -37,6 +37,7 @@ License and Authors
 * Author:: Dan Robinson (dan@getchef.com)
 * Author:: Julian Dunn (jdunn@getchef.com)
 * Author:: James Francis (james@gnslngr.us)
+* Author:: Andy Theuninck (andy@gohanman.com>
 
 * Copyright (C) 2013-2014 Chef Software, Inc.
 

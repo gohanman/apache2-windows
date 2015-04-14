@@ -2,6 +2,13 @@
 
 This file is used to list changes made in each version of apache2_windows.
 
+## 0.2.1:
+
+* Changed source to apachelounge.com
+* Updated version to 2.4.12.VC9
+* VC portion of version string used to set
+  correct vcruntime dependency
+
 ## 0.2.0:
 
 * First version of the rewritten cookbook.
