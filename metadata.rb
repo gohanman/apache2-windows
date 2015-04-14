@@ -8,3 +8,5 @@ version          "0.2.0"
 
 supports         "windows"
 depends          "windows"
+depends          "windows_firewall"
+depends          "vcruntime"
