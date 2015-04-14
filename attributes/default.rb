@@ -17,13 +17,14 @@
 # limitations under the License.
 #
 
-default['apache']['windows']['version']         = '2.2.25'
-default['apache']['windows']['dir']             = "#{ENV['PROGRAMFILES']}/Apache Software Foundation/Apache#{node['apache']['windows']['version'].split('.')[0..1].join('.')}"
+default['apache']['windows']['version']         = '2.4.12.VC9'
+default['apache']['windows']['topdir']          = "C:/ChefApache#{node['apache']['windows']['version'].split('.')[0..1].join('.')}"
+default['apache']['windows']['dir'] 		= "#{node['apache']['windows']['topdir']}/Apache24"
 default['apache']['windows']['bin_dir']         = "#{node['apache']['windows']['dir']}/bin"
 default['apache']['windows']['conf_dir']        = "#{node['apache']['windows']['dir']}/conf.d"
 default['apache']['windows']['display_name']    = "Apache HTTP Server #{node['apache']['windows']['version']}"
-default['apache']['windows']['package_name']    = "httpd-#{node['apache']['windows']['version']}-win32-x86-openssl-0.9.8y.msi"
-default['apache']['windows']['source']          = "http://mirrors.ibiblio.org/apache/httpd/binaries/win32/#{node['apache']['windows']['package_name']}"
+default['apache']['windows']['package_name']    = "httpd-#{node['apache']['windows']['version'].split('.')[0..2].join('.')}-win32-ssl_0.9.8-#{node['apache']['windows']['version'].split('.')[3]}.zip"
+default['apache']['windows']['source']          = "https://www.apachelounge.com/download/win32/binaries/#{node['apache']['windows']['package_name']}"
 default['apache']['windows']['log_dir']         = 'logs' # relative to ServerRoot
 default['apache']['windows']['error_log']       = 'error.log'
 default['apache']['windows']['access_log']      = 'access.log'
@@ -41,7 +42,8 @@ default['apache']['windows']['pid_file']        = "#{node['apache']['windows']['
 default['apache']['windows']['lib_dir']         = "#{node['apache']['windows']['dir']}/modules"
 default['apache']['windows']['libexecdir']      = node['apache']['windows']['lib_dir']
 default['apache']['windows']['serveradmin']     = "admin@#{node['fqdn']}"
-default['apache']['windows']['default_modules'] = %w{ actions alias asis auth_basic authn_default authn_file authz_default authz_groupfile authz_host authz_user autoindex cgi dir env include isapi log_config mime negotiation setenvif }
+default['apache']['windows']['servicename']     = "Apache#{node['apache']['windows']['version'].split('.')[0..1].join('.')}"
+default['apache']['windows']['default_modules'] = %w{ access_compat actions alias allowmethods asis auth_basic authn_core authn_file authz_core authz_groupfile authz_host authz_user autoindex cgi dir env include isapi log_config mime negotiation setenvif }
 
 # General settings
 default['apache']['windows']['listen_ports']      = %w[80]
