@@ -441,5 +441,5 @@ SSLRandomSeed startup builtin
 SSLRandomSeed connect builtin
 </IfModule>
 
-Include "<%= node['apache']['windows']['conf_dir'] %>/*.conf"
+IncludeOptional "<%= node['apache']['windows']['conf_dir'] %>/*.conf"
 
