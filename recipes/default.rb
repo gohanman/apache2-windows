@@ -44,6 +44,15 @@ directory "#{node['apache']['windows']['conf_dir']}" do
   action :create
 end
 
+windows_firewall_rule "Apache (Chef)" do
+  localport '80'
+  protocol :TCP
+  firewall_action :allow
+  profile :private
+  dir :in
+  program "#{node['apache']['windows']['bin_dir']}/httpd.exe".gsub('/', '\\')
+end
+
 # install service if necessary
 execute "#{node['apache']['windows']['bin_dir']}/httpd.exe -k install" do
   not_if {::Win32::Service.exists?("apache2.4")}
@@ -60,14 +69,7 @@ node['apache']['windows']['extras'].each do |extra|
   include_recipe "apache2_windows::_extra_#{extra}"
 end
 
-windows_firewall_rule "Apache (Chef)" do
-  localport '80'
-  protocol :TCP
-  firewall_action :allow
-  profile :private
-  dir :in
-  program "#{node['apache']['windows']['bin_dir']}/httpd.exe".gsub('/', '\\')
-end
+
 
 # Start apache service
 service "apache2" do
